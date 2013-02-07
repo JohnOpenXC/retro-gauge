@@ -56,6 +56,7 @@ int speedSlope = 1739;
 long targetPosition = 0;
 long currentPosition = 0;
 unsigned long nextUpdate;
+long delta;
 
 
 void setup(void) {
@@ -80,20 +81,18 @@ void setup(void) {
 }
 
 void loop() {  
+  delta = targetPosition - currentPosition;
   if (micros() > nextUpdate) {
-    if((targetPosition - currentPosition) > 0) {
+    if((delta) > 0) {
       motor1.stepUp();
       currentPosition++;
-    } else if((targetPosition - currentPosition) < 0){
+    } else if(delta < 0){
       motor1.stepDown();
       currentPosition--;
     }
 //    nextUpdate += 6290 - 10*abs(targetPosition - currentPosition);
-    long delta = abs(targetPosition - currentPosition);
-    if (delta == 0) {
-      nextUpdate = 1000000000;
-    } else {
-      nextUpdate = micros() + 400 + 279841/(delta);
+    if (delta != 0) {
+      nextUpdate = micros() + 400 + 279841/(abs(delta));
     }
   }
 
@@ -106,12 +105,18 @@ void loop() {
       if (c == ')' || c =='>'){
         parse_message(input);
         input = "";
-        long delta = abs(targetPosition - currentPosition);
-        if (delta == 0) {
-          nextUpdate = 1000000000;
-        } else {
-          nextUpdate = micros() + 400 + 279841/(delta);
-        }
+//        long delta = abs(targetPosition - currentPosition);
+//        if (delta == 0) {
+//          nextUpdate = 1000000000;
+//        } else {
+//          nextUpdate = micros() + 400 + 279841/(delta);
+//        }
+      }
+      if (c == 'u') {
+        motor1.stepUp();
+      }
+      if (c == 'd') {
+        motor1.stepDown();
       }
     }
   }
