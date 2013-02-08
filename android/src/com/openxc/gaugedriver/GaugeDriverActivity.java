@@ -48,6 +48,7 @@ public class GaugeDriverActivity extends Activity {
     private ToggleButton mToggleButton;
     private TextView mStatusText;
     private TextView mSendText;
+    private TextView mDebugText;
 
     private PendingIntent mPermissionIntent;
     UsbManager mUsbManager = null;
@@ -203,6 +204,7 @@ public class GaugeDriverActivity extends Activity {
         }
 
         mSendText = (TextView) findViewById(R.id.editTextManualData);
+        mDebugText = (TextView) findViewById(R.id.editTextDebug);
 
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
@@ -225,15 +227,17 @@ public class GaugeDriverActivity extends Activity {
             }
         }
 
-        mToggleButton = (ToggleButton) findViewById(R.id.toggleButtonTimer);
-
         if (mReceiveTimer != null)  //If the timer is running
         {
             onTimerToggle(null);
             onTimerToggle(null);    //Reset the timer so the slider updates are pointing at the right Activity.
+        }
+        
+        mToggleButton = (ToggleButton) findViewById(R.id.toggleButtonTimer);
+        if (mReceiveTimer != null)  {  //If the timer is running
             mToggleButton.setChecked(true);
         } else {
-            mToggleButton.setChecked(true);
+            mToggleButton.setChecked(false);
         }
     }
 
@@ -250,7 +254,7 @@ public class GaugeDriverActivity extends Activity {
                     mSerialStarted = mSerialPort.begin(9600);
                     if (mSerialStarted)
                     {
-                        if(mReceiveTimer == null)   //Start the updates.
+                        if(mReceiveTimer != null)   //Make sure we're not running updates.
                             onTimerToggle(null);
                     } else
                     {
@@ -284,6 +288,16 @@ public class GaugeDriverActivity extends Activity {
         runOnUiThread(new Runnable() {
             public void run() {
                 mStatusText.setText(outCS);
+            }
+        });
+    }
+    
+    private void UpdateDebug(String newMessage) {
+        final CharSequence outCS = newMessage;
+        runOnUiThread(new Runnable() {
+            public void run() {
+                //mDebugText.append(outCS);
+            	mDebugText.setText(outCS);
             }
         });
     }
@@ -377,6 +391,8 @@ public class GaugeDriverActivity extends Activity {
 
         writeStringToSerial("(" + String.format("%02d", value) + "|" +
                 String.format("%02d", iPercent) + ")");
+        //UpdateDebug("(" + String.format("%02d", value) + "|" +
+        //        String.format("%02d", iPercent) + ")");
     }
 
     private void writeStringToSerial(String outString){
