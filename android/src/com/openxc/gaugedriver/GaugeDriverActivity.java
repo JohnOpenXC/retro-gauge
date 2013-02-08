@@ -99,7 +99,7 @@ public class GaugeDriverActivity extends Activity {
             mCurrentFuel = fuel.getValue().doubleValue();
             if((mDataUsed == 1) && ((mCurrentFuel - mLastFuel) > 0.001)) {
                 mNewData = true;
-                double mpg = ((mCurrentOdo - mLastOdo) / 1600) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from m / l to mi / gal.
+                double mpg = ((mCurrentOdo - mLastOdo) / 1.6) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from km / l to mi / gal.
             	mLastFuel = mCurrentFuel;
             	mLastOdo = mCurrentOdo;
 
@@ -467,13 +467,14 @@ public class GaugeDriverActivity extends Activity {
         //Reset all our data.
         mLastOdo = mCurrentOdo;
         mLastFuel = mCurrentFuel;
+        mLastMPG = 0.0;
 
         mStatusText.setText("Using Vehicle Mileage Data");
 
         mGaugeMin = 0.0;
         mGaugeRange = 50.0;
 
-        mNewData = true;
+        mNewData = false;
     }
 
     public void onSteeringClick(View view) {
