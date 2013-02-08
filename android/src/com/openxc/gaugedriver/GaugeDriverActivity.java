@@ -352,12 +352,12 @@ public class GaugeDriverActivity extends Activity {
         if(mColorToValue) {
             int thisColor = 0;
             switch (mDataUsed) {
-            //colors: 0-259.  Red == 180, Green == 255, Blue = 60.
+            //colors: 0-259.  Red == 0, Yellow == 65, Green == 110, Blue == 170, Purple == 260.
             case 0: //Speed: 0mph = green, 80mph = red.
-                thisColor = 255 - (int)(dPercent * 75.0);
+                thisColor = 110 - (int)(dPercent * 110.0);
                 break;
             case 1: //Mileage: 50mpg = green, 0mpg = red.
-                thisColor = 180 + (int)(dPercent * 75.0);
+                thisColor = (int)(dPercent * 110.0);
                 break;
             case 2: //Steering wheel angle:  Sweep through the spectrum.
                 thisColor = (int)(dPercent * 259.0);
