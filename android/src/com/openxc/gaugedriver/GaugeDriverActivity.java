@@ -96,13 +96,14 @@ public class GaugeDriverActivity extends Activity {
         public void receive(Measurement measurement) {
             final FuelConsumed fuel = (FuelConsumed) measurement;
             mCurrentFuel = fuel.getValue().doubleValue();
-            if(mDataUsed == 1)
+            if((mDataUsed == 1) && ((mCurrentFuel - mLastFuel) > 0.001)) {
                 mNewData = true;
-            double mpg = ((mCurrentOdo - mLastOdo) / 1600) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from m / l to mi / gal.
-            mLastFuel = mCurrentFuel;
-            mLastOdo = mCurrentOdo;
+                double mpg = ((mCurrentOdo - mLastOdo) / 1600) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from m / l to mi / gal.
+            	mLastFuel = mCurrentFuel;
+            	mLastOdo = mCurrentOdo;
 
-            mLastMPG = (mLastMPG * 9.0 + mpg)/10.0;
+            	mLastMPG = (mLastMPG * 9.0 + mpg)/10.0;
+            }
         }
     };
 
@@ -327,12 +328,12 @@ public class GaugeDriverActivity extends Activity {
         }
 
         double dPercent = (dValue - mGaugeMin) / mGaugeRange;
+        if (dPercent > 1.0)
+            dPercent = 1.0;
+        else if (dPercent < 0.0)
+            dPercent = 0.0;
+        
         if(mColorToValue) {
-            if (dPercent > 1)
-                dPercent = 1;
-            else if (dPercent < 0)
-                dPercent = 0;
-
             int thisColor = 0;
             switch (mDataUsed) {
             //colors: 0-259.  Red == 180, Green == 255, Blue = 60.
