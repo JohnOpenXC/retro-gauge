@@ -292,12 +292,14 @@ public class GaugeDriverActivity extends Activity {
         });
     }
     
-    private void UpdateDebug(String newMessage) {
+    private void UpdateDebug(final boolean clearFirst, String newMessage) {
         final CharSequence outCS = newMessage;
         runOnUiThread(new Runnable() {
             public void run() {
-                //mDebugText.append(outCS);
-            	mDebugText.setText(outCS);
+            	if(clearFirst)
+            		mDebugText.setText(outCS);
+            	else
+            		mDebugText.append(outCS);
             }
         });
     }
@@ -366,7 +368,9 @@ public class GaugeDriverActivity extends Activity {
 
             if (thisColor != mLastColor) {
                 mLastColor = thisColor;
-                writeStringToSerial( "<" + String.format("%03d", thisColor) + ">");
+                String colorPacket = "<" + String.format("%03d", thisColor) + ">";
+                writeStringToSerial(colorPacket);
+                //UpdateDebug(true, colorPacket);
 
                 runOnUiThread(new Runnable() {
                     public void run() {
@@ -388,11 +392,12 @@ public class GaugeDriverActivity extends Activity {
 
         int value = (int)dValue;
         value %= 100;  //We've only got two digits to work with.
-
-        writeStringToSerial("(" + String.format("%02d", value) + "|" +
-                String.format("%02d", iPercent) + ")");
-        //UpdateDebug("(" + String.format("%02d", value) + "|" +
-        //        String.format("%02d", iPercent) + ")");
+        
+        String dataPacket = "(" + String.format("%02d", value) + "|" +
+                String.format("%02d", iPercent) + ")";
+        writeStringToSerial(dataPacket);
+        //UpdateDebug(false, dataPacket + "\n");
+        UpdateDebug(true, "Color: " + mLastColor + "\nValue: " + String.format("%02d", value) + "\nPercent: " + String.format("%02d", iPercent));
     }
 
     private void writeStringToSerial(String outString){
