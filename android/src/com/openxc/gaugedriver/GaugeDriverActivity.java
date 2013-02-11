@@ -83,6 +83,7 @@ public class GaugeDriverActivity extends Activity {
     static double mCurrentFuel = 0.0;
     static double mLastMPG = 0.0;
     static double mSteeringWheelAngle = 0.0;
+    static int mFuelCounter = 1;
 
     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
         public void receive(Measurement measurement) {
@@ -97,13 +98,19 @@ public class GaugeDriverActivity extends Activity {
         public void receive(Measurement measurement) {
             final FuelConsumed fuel = (FuelConsumed) measurement;
             mCurrentFuel = fuel.getValue().doubleValue();
-            if((mDataUsed == 1) && ((mCurrentFuel - mLastFuel) > 0.001)) {
-                mNewData = true;
-                double mpg = ((mCurrentOdo - mLastOdo) / 1.6) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from km / l to mi / gal.
-            	mLastFuel = mCurrentFuel;
-            	mLastOdo = mCurrentOdo;
-
+            mFuelCounter--;
+            if((mFuelCounter < 1)) {
+                mFuelCounter = 50;
+                double mpg = 0.0;
+                if((mCurrentFuel - mLastFuel) > 0.001) {
+                	mpg = ((mCurrentOdo - mLastOdo) / 1.6) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from km / l to mi / gal.
+                    mLastFuel = mCurrentFuel;
+                	mLastOdo = mCurrentOdo;
+                }
             	mLastMPG = (mLastMPG * 9.0 + mpg)/10.0;
+            	if(mDataUsed == 1) {
+            		mNewData = true;
+            	}
             }
         }
     };
@@ -464,17 +471,12 @@ public class GaugeDriverActivity extends Activity {
     public void onMPGClick(View view) {
         mDataUsed = 1;
 
-        //Reset all our data.
-        mLastOdo = mCurrentOdo;
-        mLastFuel = mCurrentFuel;
-        mLastMPG = 0.0;
-
         mStatusText.setText("Using Vehicle Mileage Data");
 
         mGaugeMin = 0.0;
         mGaugeRange = 50.0;
 
-        mNewData = false;
+        mNewData = true;
     }
 
     public void onSteeringClick(View view) {
