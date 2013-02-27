@@ -87,8 +87,8 @@ public class GaugeDriverActivity extends Activity {
     static int mFuelCount = 0;
     static int mOdoCount = 0;
     
-    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(500, true);
-    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(500, false);
+    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(1000);   //Delay time in milliseconds.
+    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(1000);
 
     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
         public void receive(Measurement measurement) {
@@ -104,17 +104,13 @@ public class GaugeDriverActivity extends Activity {
         public void receive(Measurement measurement) {
         	mFuelCount++;
             final FuelConsumed fuel = (FuelConsumed) measurement;
-            long now = System.nanoTime()/1000000;
+            long now = System.currentTimeMillis();
             double fuelConsumed = fuel.getValue().doubleValue();
-//            mMPG = fuel.getValue().doubleValue();
-            Log.i("Fuel", "Fuel: " + fuelConsumed);
             mFuelTotal.Add(fuelConsumed, now);
             double currentFuel = mFuelTotal.Recalculate(now);
-            if(currentFuel > 0.001) {
+            if(currentFuel > 0.00001) {
             	double currentOdo = mOdoTotal.Recalculate(now);
             	mMPG = (currentOdo / 1.6) / (currentFuel * 0.264172);  //Converting from km / l to mi / gal.
-            } else {
-            	mMPG = 0.0;
             }
            	if(mDataUsed == 1) {
            		mNewData = true;
@@ -126,8 +122,7 @@ public class GaugeDriverActivity extends Activity {
         public void receive(Measurement measurement) {
         	mOdoCount++;
             final Odometer odometer = (Odometer) measurement;
-            long now = System.nanoTime()/1000000;
-            mOdoTotal.Add(odometer.getValue().doubleValue(), now);
+            mOdoTotal.Add(odometer.getValue().doubleValue(), System.currentTimeMillis());
         }
     };
 
