@@ -87,9 +87,9 @@ public class GaugeDriverActivity extends Activity {
     static int mFuelCount = 0;
     static int mOdoCount = 0;
     
-    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(1000);   //Delay time in milliseconds.
-    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(1000);
-
+    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(2000);   //Delay time in milliseconds.
+    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(2000);
+    
     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
         public void receive(Measurement measurement) {
             final VehicleSpeed speed = (VehicleSpeed) measurement;
@@ -110,7 +110,7 @@ public class GaugeDriverActivity extends Activity {
             double currentFuel = mFuelTotal.Recalculate(now);
             if(currentFuel > 0.00001) {
             	double currentOdo = mOdoTotal.Recalculate(now);
-            	mMPG = (currentOdo / 1.6) / (currentFuel * 0.264172);  //Converting from km / l to mi / gal.
+            	mMPG = (currentOdo / currentFuel) * 2.35215;  //Converting from km / l to mi / gal.
             }
            	if(mDataUsed == 1) {
            		mNewData = true;
@@ -410,15 +410,13 @@ public class GaugeDriverActivity extends Activity {
                 String.format("%02d", iPercent) + ")";
         writeStringToSerial(dataPacket);
         //UpdateDebug(false, dataPacket + "\n");
-        mDebugCounter--;
-        if (mDebugCounter < 1) {
-        	UpdateDebug(true, "Color: " + mLastColor + "\nValue: " + String.format("%02d", value) + "\nPercent: " + String.format("%02d", iPercent)
-        		+ "\n\nSpeed: " + mSpeed + "\nSpeed Updates: " + mSpeedCount + 
-        		"\n\nSteering Wheel Angle: " + mSteeringWheelAngle + "\nSteering Updates: " + mSteeringCount + 
-        		"\n\nFuel: " + mFuelTotal.Latest() + "\nFuel Updates: " + mFuelCount +
-        		"\n\nOdometer: " + mOdoTotal.Latest() + "\nOdometer Updates: " + mOdoCount);
-        	mDebugCounter = 10;
-        }
+//        mDebugCounter--;
+//        if (mDebugCounter < 1) {
+//        	UpdateDebug(true, "Latest Fuel: " + mFuelTotal.Latest() + "\nFuel Updates: " + mFuelCount +
+//        		"\nLatest Odometer: " + mOdoTotal.Latest() + "\nOdometer Updates: " + mOdoCount + 
+//        		"\nTotal MPG: " + ((mOdoTotal.Latest()/mFuelTotal.Latest())*2.35215));
+//        	mDebugCounter = 3;
+//        }
     }
 
     private void writeStringToSerial(String outString){
