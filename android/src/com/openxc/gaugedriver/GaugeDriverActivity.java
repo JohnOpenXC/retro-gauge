@@ -28,7 +28,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.openxc.VehicleManager;
-import com.openxc.measurements.FineOdometer;
+import com.openxc.measurements.Odometer;
 import com.openxc.measurements.FuelConsumed;
 import com.openxc.measurements.Measurement;
 import com.openxc.measurements.SteeringWheelAngle;
@@ -37,6 +37,8 @@ import com.openxc.measurements.VehicleSpeed;
 import com.openxc.remote.VehicleServiceException;
 
 public class GaugeDriverActivity extends Activity {
+	
+	static int mDebugCounter = 10;
 
     private static String TAG = "GaugeDriver";
     private int mTimerPeriod = 10;  //Time between Gauge updates, in milliseconds.
@@ -77,18 +79,22 @@ public class GaugeDriverActivity extends Activity {
             "com.ford.openxc.USB_PERMISSION";
 
     static double mSpeed = 0.0;
-    static double mLastOdo = 0.0;
-    static double mCurrentOdo = 0.0;
-    static double mLastFuel = 0.0;
-    static double mCurrentFuel = 0.0;
-    static double mLastMPG = 0.0;
     static double mSteeringWheelAngle = 0.0;
-    static int mFuelCounter = 1;
-
+    static double mMPG = 0.0;
+    
+    static int mSpeedCount = 0;
+    static int mSteeringCount = 0;
+    static int mFuelCount = 0;
+    static int mOdoCount = 0;
+    
+    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(2000);   //Delay time in milliseconds.
+    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(2000);
+    
     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
         public void receive(Measurement measurement) {
             final VehicleSpeed speed = (VehicleSpeed) measurement;
             mSpeed = speed.getValue().doubleValue();
+            mSpeedCount++;
             if(mDataUsed == 0)
                 mNewData = true;
         }
@@ -96,34 +102,33 @@ public class GaugeDriverActivity extends Activity {
 
     FuelConsumed.Listener mFuelConsumedListener = new FuelConsumed.Listener() {
         public void receive(Measurement measurement) {
+        	mFuelCount++;
             final FuelConsumed fuel = (FuelConsumed) measurement;
-            mCurrentFuel = fuel.getValue().doubleValue();
-            mFuelCounter--;
-            if((mFuelCounter < 1)) {
-                mFuelCounter = 50;
-                double mpg = 0.0;
-                if((mCurrentFuel - mLastFuel) > 0.001) {
-                	mpg = ((mCurrentOdo - mLastOdo) / 1.6) / ((mCurrentFuel - mLastFuel) * 0.264172);  //Converting from km / l to mi / gal.
-                    mLastFuel = mCurrentFuel;
-                	mLastOdo = mCurrentOdo;
-                }
-            	mLastMPG = (mLastMPG * 9.0 + mpg)/10.0;
-            	if(mDataUsed == 1) {
-            		mNewData = true;
-            	}
+            long now = System.currentTimeMillis();
+            double fuelConsumed = fuel.getValue().doubleValue();
+            mFuelTotal.Add(fuelConsumed, now);
+            double currentFuel = mFuelTotal.Recalculate(now);
+            if(currentFuel > 0.00001) {
+            	double currentOdo = mOdoTotal.Recalculate(now);
+            	mMPG = (currentOdo / currentFuel) * 2.35215;  //Converting from km / l to mi / gal.
+            }
+           	if(mDataUsed == 1) {
+           		mNewData = true;
             }
         }
     };
 
-   FineOdometer.Listener mFineOdometerListener = new FineOdometer.Listener() {
+   Odometer.Listener mFineOdometerListener = new Odometer.Listener() {
         public void receive(Measurement measurement) {
-            final FineOdometer odometer = (FineOdometer) measurement;
-            mCurrentOdo = odometer.getValue().doubleValue();
+        	mOdoCount++;
+            final Odometer odometer = (Odometer) measurement;
+            mOdoTotal.Add(odometer.getValue().doubleValue(), System.currentTimeMillis());
         }
     };
 
     SteeringWheelAngle.Listener mSteeringWheelListener = new SteeringWheelAngle.Listener() {
         public void receive(Measurement measurement) {
+        	mSteeringCount++;
             final SteeringWheelAngle angle = (SteeringWheelAngle) measurement;
             mSteeringWheelAngle = angle.getValue().doubleValue();
             if(mDataUsed == 2)
@@ -145,7 +150,7 @@ public class GaugeDriverActivity extends Activity {
                         mSpeedListener);
                 mVehicleManager.addListener(FuelConsumed.class,
                         mFuelConsumedListener);
-                mVehicleManager.addListener(FineOdometer.class,
+                mVehicleManager.addListener(Odometer.class,
                         mFineOdometerListener);
             } catch(VehicleServiceException e) {
                  Log.w(TAG, "Couldn't add listeners for measurements", e);
@@ -261,7 +266,8 @@ public class GaugeDriverActivity extends Activity {
                     mSerialStarted = mSerialPort.begin(9600);
                     if (mSerialStarted)
                     {
-                        if(mReceiveTimer != null)   //Make sure we're not running updates.
+                        if(mReceiveTimer != null)   
+                        	//We can't update the toggle switch from here, so we stop the updates if they're active.
                             onTimerToggle(null);
                     } else
                     {
@@ -326,7 +332,7 @@ public class GaugeDriverActivity extends Activity {
             UpdateStatus("Speed: " + dValue);
             break;
         case 1:  //mpg
-            dValue = mLastMPG;
+            dValue = mMPG;
             UpdateStatus("Mileage: " + dValue);
             break;
         case 2:  //Steering wheel angle
@@ -404,21 +410,29 @@ public class GaugeDriverActivity extends Activity {
                 String.format("%02d", iPercent) + ")";
         writeStringToSerial(dataPacket);
         //UpdateDebug(false, dataPacket + "\n");
-        UpdateDebug(true, "Color: " + mLastColor + "\nValue: " + String.format("%02d", value) + "\nPercent: " + String.format("%02d", iPercent));
+//        mDebugCounter--;
+//        if (mDebugCounter < 1) {
+//        	UpdateDebug(true, "Latest Fuel: " + mFuelTotal.Latest() + "\nFuel Updates: " + mFuelCount +
+//        		"\nLatest Odometer: " + mOdoTotal.Latest() + "\nOdometer Updates: " + mOdoCount + 
+//        		"\nTotal MPG: " + ((mOdoTotal.Latest()/mFuelTotal.Latest())*2.35215));
+//        	mDebugCounter = 3;
+//        }
     }
 
     private void writeStringToSerial(String outString){
-        char[] outMessage = outString.toCharArray();
-        byte outBuffer[] = new byte[128];
-        for(int i=0; i<outString.length(); i++)
-        {
-            outBuffer[i] = (byte)outMessage[i];
-        }
-        try {
-            mSerialPort.write(outBuffer,  outString.length());
-        } catch (Exception e) {
-            Log.d(TAG, "mSerialPort.write() just threw an exception.  Is the cable plugged in?");
-        }
+    	if(mSerialStarted) {
+	        char[] outMessage = outString.toCharArray();
+	        byte outBuffer[] = new byte[128];
+	        for(int i=0; i<outString.length(); i++)
+	        {
+	            outBuffer[i] = (byte)outMessage[i];
+	        }
+	        try {
+	            mSerialPort.write(outBuffer,  outString.length());
+	        } catch (Exception e) {
+	            Log.d(TAG, "mSerialPort.write() just threw an exception.  Is the cable plugged in?");
+	        }
+    	}
     }
 
     public void onExit(View view){
