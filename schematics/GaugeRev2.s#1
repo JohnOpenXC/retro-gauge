@@ -6263,6 +6263,10 @@ Based on the following sources:
 <pinref part="GND9" gate="1" pin="GND"/>
 <label x="22.86" y="50.8" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="CTS"/>
+<wire x1="96.52" y1="38.1" x2="101.6" y2="38.1" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="MOTOR1" class="0">
 <segment>
@@ -6419,6 +6423,11 @@ Based on the following sources:
 <segment>
 <pinref part="U1" gate="G$1" pin="DTR"/>
 <wire x1="83.82" y1="121.92" x2="83.82" y2="124.46" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U3" gate="G$1" pin="DTR"/>
+<wire x1="96.52" y1="33.02" x2="101.6" y2="33.02" width="0.1524" layer="91"/>
+<label x="99.06" y="33.02" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="Q*" class="0">
