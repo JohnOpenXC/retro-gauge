@@ -1,0 +1,47 @@
+Partlist
+
+Exported from GaugeRev2.sch at 4/1/13 6:07 PM
+
+EAGLE Version 6.2.0 Copyright (c) 1988-2012 CadSoft
+
+Assembly variant: 
+
+Part     Value             Device            Package          Library   Sheet
+
+C1       .1uF              CAP1210           1210             SparkFun  1
+C3       10uF              CAP_POL1206-KIT   EIA3216-KIT      SparkFun  1
+DIS2     HD-K121           HD-K121           HDSP-R           HDSP-523E 1
+LED1     LED-TRICOLOR      LED-TRICOLOR      LED-TRICOLOR-SMD SparkFun  1
+LED2     LED-TRICOLOR      LED-TRICOLOR      LED-TRICOLOR-SMD SparkFun  1
+LED3     RED               LED1206           LED-1206         SparkFun  1
+LED4     GRN               LED1206           LED-1206         SparkFun  1
+R1       220               R-US_R1206        R1206            resistor  1
+R2       220               R-US_R1206        R1206            resistor  1
+R3       220               R-US_R1206        R1206            resistor  1
+R4       220               R-US_R1206        R1206            resistor  1
+R5       220               R-US_R1206        R1206            resistor  1
+R6       220               R-US_R1206        R1206            resistor  1
+R7       220               R-US_R1206        R1206            resistor  1
+R8       220               R-US_R1206        R1206            resistor  1
+R9       220               R-US_R1206        R1206            resistor  1
+R10      220               R-US_R1206        R1206            resistor  1
+R11      220               R-US_R1206        R1206            resistor  1
+R12      220               R-US_R1206        R1206            resistor  1
+R13      220               R-US_R1206        R1206            resistor  1
+R14      220               R-US_R1206        R1206            resistor  1
+R15      100               R-US_R1206        R1206            resistor  1
+R16      100               R-US_R1206        R1206            resistor  1
+R17      100               R-US_R1206        R1206            resistor  1
+R18      220               R-US_R1206        R1206            resistor  1
+R19      220               R-US_R1206        R1206            resistor  1
+R20      100               R-US_R1206        R1206            resistor  1
+R21      100               R-US_R1206        R1206            resistor  1
+R22      100               R-US_R1206        R1206            resistor  1
+R23      1K                RESISTOR1206      1206             SparkFun  1
+R24      1K                RESISTOR1206      1206             SparkFun  1
+SHIFT1   74HCT595D         74HCT595D         SO16             74xx-eu   1
+SHIFT2   74HCT595D         74HCT595D         SO16             74xx-eu   1
+U$1      USB-MINI-VERT     USB-MINI-VERT     USB-MINI-VERT    Evans     1
+U1       ARDUINO_MINI      ARDUINO_MINI      ARDUINO_MINI     SparkFun  1
+U2       VID29             VID29             VID29            Evans     1
+U3       FT232RL-BASICSSOP FT232RL-BASICSSOP SSOP28DB         SparkFun  1

@@ -1927,9 +1927,8 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <element name="R21" library="resistor" package="R1206" value="100" x="37.592" y="50.8" rot="R270"/>
 <element name="R22" library="resistor" package="R1206" value="100" x="34.798" y="52.578" rot="R270"/>
 <element name="U3" library="SparkFun" package="SSOP28DB" value="FT232RL-BASICSSOP" x="5.842" y="-8.128"/>
-<element name="C1" library="SparkFun" package="1210" value="" x="2.794" y="-13.97"/>
-<element name="C2" library="SparkFun" package="1210" value="" x="2.794" y="-17.018"/>
-<element name="C3" library="SparkFun" package="EIA3216-KIT" value="" x="3.556" y="-20.574"/>
+<element name="C1" library="SparkFun" package="1210" value=".1uF" x="2.794" y="-13.97"/>
+<element name="C3" library="SparkFun" package="EIA3216-KIT" value="10uF" x="3.556" y="-20.574"/>
 <element name="R23" library="SparkFun" package="1206" value="1K" x="3.048" y="-23.622"/>
 <element name="R24" library="SparkFun" package="1206" value="1K" x="3.048" y="-26.416"/>
 </elements>
@@ -2096,8 +2095,8 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <wire x1="27.686" y1="60.452" x2="25.654" y2="62.484" width="0.4064" layer="1"/>
 <wire x1="25.654" y1="62.484" x2="23.114" y2="62.484" width="0.4064" layer="1"/>
 <wire x1="23.114" y1="62.484" x2="22.86" y2="62.738" width="0.4064" layer="1"/>
-<contactref element="U3" pad="20"/>
-<wire x1="6.817" y1="-4.472" x2="8.8646" y2="37.211" width="0" layer="19" extent="1-1"/>
+<contactref element="U3" pad="4"/>
+<wire x1="3.567" y1="-11.784" x2="3.937" y2="37.211" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="DIS2" pad="16"/>
@@ -2671,8 +2670,14 @@ This Sunstone Circuits 2 Layer .DRU has been set to cover our minimum requiremen
 <wire x1="47.56" y1="42.95" x2="46.228" y2="43.18" width="0.4064" layer="1"/>
 <wire x1="46.228" y1="43.18" x2="44.45" y2="51.156" width="0.4064" layer="1"/>
 </signal>
-<signal name="VCCIO">
-<contactref element="U3" pad="4"/>
+<signal name="D-">
+<contactref element="U3" pad="16"/>
+</signal>
+<signal name="D+">
+<contactref element="U3" pad="15"/>
+</signal>
+<signal name="5V">
+<contactref element="U3" pad="20"/>
 </signal>
 </signals>
 </board>
