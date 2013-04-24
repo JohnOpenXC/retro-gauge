@@ -41,7 +41,7 @@ public class GaugeDriverActivity extends Activity {
 	static int mDebugCounter = 10;
 
     private static String TAG = "GaugeDriver";
-    private int mTimerPeriod = 10;  //Time between Gauge updates, in milliseconds.
+    private static int mTimerPeriod = 10;  //Time between Gauge updates, in milliseconds.
 
     private VehicleManager mVehicleManager;
     private boolean mIsBound;
@@ -87,8 +87,8 @@ public class GaugeDriverActivity extends Activity {
     static int mFuelCount = 0;
     static int mOdoCount = 0;
     
-    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(2000);   //Delay time in milliseconds.
-    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(2000);
+    static FuelOdoHandler mFuelTotal = new FuelOdoHandler(5000);   //Delay time in milliseconds.
+    static FuelOdoHandler mOdoTotal = new FuelOdoHandler(5000);
     
     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
         public void receive(Measurement measurement) {
@@ -404,7 +404,8 @@ public class GaugeDriverActivity extends Activity {
         }
 
         int value = (int)dValue;
-        value %= 100;  //We've only got two digits to work with.
+        if (value > 99)
+        	value = 99;  //We've only got two digits to work with.
         
         String dataPacket = "(" + String.format("%02d", value) + "|" +
                 String.format("%02d", iPercent) + ")";
